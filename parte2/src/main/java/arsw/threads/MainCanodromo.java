@@ -2,12 +2,13 @@ package arsw.threads;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.swing.JButton;
 
 public class MainCanodromo {
 
-    private static Galgo[] galgos;
+    private static ConcurrentLinkedDeque<Galgo> galgos;
 
     private static Canodromo can;
 
@@ -15,7 +16,7 @@ public class MainCanodromo {
 
     public static void main(String[] args) {
         can = new Canodromo(17, 100);
-        galgos = new Galgo[can.getNumCarriles()];
+        galgos = new ConcurrentLinkedDeque<Galgo>();
         can.setVisible(true);
 
         //Acción del botón start
@@ -33,22 +34,22 @@ public class MainCanodromo {
                             public void run() {
                                 for (int i = 0; i < can.getNumCarriles(); i++) {
                                     //crea los hilos 'galgos'
-                                    galgos[i] = new Galgo(can.getCarril(i), "" + i, reg);
+                                    galgos.add( new Galgo(can.getCarril(i), "" + i, reg));
                                     //inicia los hilos
-                                    galgos[i].start();
+                                    galgos.getLast().start();
 
                                 }
                                 for (int i = 0; i < can.getNumCarriles(); i++) {
                                     //crea los hilos 'galgos'
                                     try {
-                                        galgos[i].join();
+                                        galgos.getLast().join();
                                     } catch (InterruptedException interruptedException) {
                                         interruptedException.printStackTrace();
                                     }
 
                                 }
-				can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1); 
-                                System.out.println("El ganador fue:" + reg.getGanador());
+				can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1);
+                               System.out.println("El ganador fue:" + reg.getGanador());
                             }
                         }.start();
 
@@ -61,6 +62,13 @@ public class MainCanodromo {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera pausada!");
+                        synchronized (galgos){
+                            try {
+                                galgos.wait();
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
+                            }
+                        }
                     }
                 }
         );
@@ -70,6 +78,9 @@ public class MainCanodromo {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera reanudada!");
+                        synchronized (galgos){
+                            galgos.notifyAll();
+                        }
                     }
                 }
         );

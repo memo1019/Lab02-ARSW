@@ -29,8 +29,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		Long inicio = System.currentTimeMillis()/1000;
-		int n=1;
+
+		int n=3;
 		int average = 30000000/n;
 		int cont = 0;
 		AtomicInteger count = new AtomicInteger();
@@ -39,21 +39,21 @@ public class Main {
 			threads.add(new PrimeFinderThread(cont,cont+average, count));
 			cont = cont + average;
 		}
-
-		Timer timer = new Timer (5000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pararHilos(threads);
-			}
-		});
-		timer.start();
+//
+//		Timer timer = new Timer (5000, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				pararHilos(threads);
+//			}
+//		});
+//		timer.start();
 		for (PrimeFinderThread hilo: threads){
 			hilo.start();
 		}
-		Scanner waitForKeypress = new Scanner(System.in);
-		System.out.print("Presiona la tecla Enter para continuar"+count);
-		waitForKeypress.nextLine();
-		reanudarHilos(threads);
-		timer.stop();
+//		Scanner waitForKeypress = new Scanner(System.in);
+//		System.out.print("Presiona la tecla Enter para continuar"+count);
+//		waitForKeypress.nextLine();
+//		reanudarHilos(threads);
+//		timer.stop();
 	}
 }

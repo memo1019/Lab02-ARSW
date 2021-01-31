@@ -29,7 +29,7 @@ public class PrimeFinderThread extends Thread {
 		for (int i = a; i <= b; i++) {
 			if (isPrime(i)) {
 				primes.add(i);
-				//System.out.println(i);
+				System.out.println(i);
 				count.incrementAndGet();
 			}
 			synchronized (this) {
