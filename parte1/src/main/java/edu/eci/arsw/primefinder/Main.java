@@ -29,7 +29,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-
+		Long inicio = System.currentTimeMillis();
 		int n=3;
 		int average = 30000000/n;
 		int cont = 0;
@@ -39,21 +39,31 @@ public class Main {
 			threads.add(new PrimeFinderThread(cont,cont+average, count));
 			cont = cont + average;
 		}
-//
-//		Timer timer = new Timer (5000, new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				pararHilos(threads);
-//			}
-//		});
-//		timer.start();
+
 		for (PrimeFinderThread hilo: threads){
 			hilo.start();
 		}
-//		Scanner waitForKeypress = new Scanner(System.in);
-//		System.out.print("Presiona la tecla Enter para continuar"+count);
-//		waitForKeypress.nextLine();
-//		reanudarHilos(threads);
-//		timer.stop();
+
+		while(true){
+			if(System.currentTimeMillis()-inicio==5000){
+				pararHilos(threads);
+				System.out.print("Primos encontrados después de 5 segundos: "+count);
+				break;
+			}
+		}
+
+		Scanner waitForKeypress = new Scanner(System.in);
+		waitForKeypress.nextLine();
+		reanudarHilos(threads);
+
+		for (PrimeFinderThread hilo: threads){
+			try {
+				hilo.join();
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
+			}
+		}
+		System.out.print("Primos encontrados en total: "+count);
 	}
+
 }

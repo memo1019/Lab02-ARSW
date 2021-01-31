@@ -15,7 +15,7 @@ public class PrimeFinderThread extends Thread {
 	private List<Integer> primes=new LinkedList<Integer>();
 	private boolean suspender;
 	private AtomicInteger count;
-	
+
 	public PrimeFinderThread(int a, int b, AtomicInteger count) {
 		super();
 		this.a = a;
@@ -44,14 +44,14 @@ public class PrimeFinderThread extends Thread {
 		}
 	}
 
-	
+
 	boolean isPrime(int n) {
-	    if (n%2==0) return false;
-	    for(int i=3;i*i<=n;i+=2) {
-	        if(n%i==0)
-	            return false;
-	    }
-	    return true;
+		if (n%2==0) return false;
+		for(int i=3;i*i<=n;i+=2) {
+			if(n%i==0)
+				return false;
+		}
+		return true;
 	}
 
 	public List<Integer> getPrimes() {
@@ -64,6 +64,6 @@ public class PrimeFinderThread extends Thread {
 
 	synchronized void renaudarhilo(){
 		suspender=false;
-		notifyAll();
+		notify();
 	}
 }
