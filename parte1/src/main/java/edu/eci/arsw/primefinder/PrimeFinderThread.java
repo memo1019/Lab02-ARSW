@@ -59,7 +59,7 @@ public class PrimeFinderThread extends Thread{
 
 	synchronized void renaudarhilo(){
 		suspender=false;
-		notify();
+		notifyAll();
 	}
 	
 }
