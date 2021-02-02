@@ -8,7 +8,7 @@ import javax.swing.JButton;
 
 public class MainCanodromo {
 
-    private static ConcurrentLinkedDeque<Galgo> galgos;
+    private static Galgo[] galgos;
 
     private static Canodromo can;
 
@@ -16,7 +16,7 @@ public class MainCanodromo {
 
     public static void main(String[] args) {
         can = new Canodromo(17, 100);
-        galgos = new ConcurrentLinkedDeque<Galgo>();
+        galgos = new Galgo[can.getNumCarriles()];
         can.setVisible(true);
 
         //Acción del botón start
@@ -34,15 +34,15 @@ public class MainCanodromo {
                             public void run() {
                                 for (int i = 0; i < can.getNumCarriles(); i++) {
                                     //crea los hilos 'galgos'
-                                    galgos.add( new Galgo(can.getCarril(i), "" + i, reg));
+                                    galgos[i] = new Galgo(can.getCarril(i), "" + i, reg);
                                     //inicia los hilos
-                                    galgos.getLast().start();
+                                    galgos[i].start();
 
                                 }
                                 for (int i = 0; i < can.getNumCarriles(); i++) {
                                     //crea los hilos 'galgos'
                                     try {
-                                        galgos.getLast().join();
+                                        galgos[i].join();
                                     } catch (InterruptedException interruptedException) {
                                         interruptedException.printStackTrace();
                                     }
@@ -62,12 +62,9 @@ public class MainCanodromo {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera pausada!");
-                        synchronized (galgos){
-                            try {
-                                galgos.wait();
-                            } catch (InterruptedException interruptedException) {
-                                interruptedException.printStackTrace();
-                            }
+                        for (int i=0;i< galgos.length;i++){
+                                galgos[i].setmovimiento(false);
+
                         }
                     }
                 }
@@ -78,8 +75,8 @@ public class MainCanodromo {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera reanudada!");
-                        synchronized (galgos){
-                            galgos.notifyAll();
+                        for (int i=0;i< galgos.length;i++){
+                                galgos[i].setmovimiento(true);
                         }
                     }
                 }
