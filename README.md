@@ -202,9 +202,11 @@ Parte III
     Al probar el programa varia veces, se identificaron las siguientes inconsinstencias:
     
     Podía ocurrir que dos o más galgos llegaran en la misma posición:
+    
     ![](./img/media/inconsistenciaparte3.PNG)
     
     También sucedía que no se contaban todos los galgos al mostrar el resultado de la carrera:
+    
     ![](./img/media/inconsistencia2parte3.PNG)
     
     Las regiones críticas que se identificaron son:
@@ -246,8 +248,7 @@ Parte III
 	    }
 	);
     ```
-    
-   ```java
+    ```java
 	can.setContinueAction(
             new ActionListener() {
                 @Override
