@@ -229,6 +229,8 @@ Parte III
     
     Los resultados después de realizar esta corrección son los siguientes:
     
+    ![](./img/media/solucion.PNG)
+    
 4.  Implemente las funcionalidades de pausa y continuar. Con estas,
     cuando se haga clic en ‘Stop’, todos los hilos de los galgos
     deberían dormirse, y cuando se haga clic en ‘Continue’ los mismos
