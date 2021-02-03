@@ -2,8 +2,6 @@ package arsw.threads;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.ConcurrentLinkedDeque;
-
 import javax.swing.JButton;
 
 public class MainCanodromo {
@@ -40,7 +38,7 @@ public class MainCanodromo {
 
                                 }
                                 for (int i = 0; i < can.getNumCarriles(); i++) {
-                                    //crea los hilos 'galgos'
+                                    //sincroniza los hilos
                                     try {
                                         galgos[i].join();
                                     } catch (InterruptedException interruptedException) {
@@ -48,10 +46,10 @@ public class MainCanodromo {
                                     }
 
                                 }
-				can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1);
-                               System.out.println("El ganador fue:" + reg.getGanador());
-                            }
-                        }.start();
+                        can.winnerDialog(reg.getGanador(),reg.getUltimaPosicionAlcanzada() - 1);
+                                       System.out.println("El ganador fue:" + reg.getGanador());
+                                    }
+                                }.start();
 
                     }
                 }
@@ -63,9 +61,9 @@ public class MainCanodromo {
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera pausada!");
                         for (int i=0;i< galgos.length;i++){
-                                galgos[i].setmovimiento(false);
-
+                                galgos[i].setMovimiento(false);
                         }
+                        can.pauseDialog();
                     }
                 }
         );
@@ -76,12 +74,11 @@ public class MainCanodromo {
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("Carrera reanudada!");
                         for (int i=0;i< galgos.length;i++){
-                                galgos[i].setmovimiento(true);
+                                galgos[i].setMovimiento(true);
                         }
+                        can.continueDialog();
                     }
                 }
         );
-
     }
-
 }

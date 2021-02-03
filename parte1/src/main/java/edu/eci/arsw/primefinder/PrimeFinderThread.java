@@ -1,14 +1,12 @@
 package edu.eci.arsw.primefinder;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.Timer;
 
+/**
+ * Esta clase es un hilo que realiza la búsqueda de números primos de un intervalo dado.
+ */
 public class PrimeFinderThread extends Thread {
 
 	private int a,b;
@@ -16,6 +14,12 @@ public class PrimeFinderThread extends Thread {
 	private boolean suspender;
 	private AtomicInteger count;
 
+	/**
+	 * Constructor del hilo
+	 * @param a Límite inferior del intervalo
+	 * @param b Límite superior del intervalo
+	 * @param count Cuenta de los primos encontrados
+	 */
 	public PrimeFinderThread(int a, int b, AtomicInteger count) {
 		super();
 		this.a = a;
@@ -24,8 +28,11 @@ public class PrimeFinderThread extends Thread {
 		this.count = count;
 	}
 
+	/**
+	 * Método para correr el hilo, tiene el ciclo que realizará la búsqueda de cada uno de los
+	 * números primos en el intervalo que se tiene
+	 */
 	public void run() {
-
 		for (int i = a; i <= b; i++) {
 			if (isPrime(i)) {
 				primes.add(i);
@@ -44,7 +51,11 @@ public class PrimeFinderThread extends Thread {
 		}
 	}
 
-
+	/**
+	 * Método que verifica si un número es primo
+	 * @param n Número que se va a verificar
+	 * @return true si es un número primo
+	 */
 	boolean isPrime(int n) {
 		if (n%2==0) return false;
 		for(int i=3;i*i<=n;i+=2) {
@@ -54,15 +65,25 @@ public class PrimeFinderThread extends Thread {
 		return true;
 	}
 
+	/**
+	 * Método que retorna los primos que se tienen hasta el momento de invocar este método
+	 * @return Lista de primos
+	 */
 	public List<Integer> getPrimes() {
 		return primes;
 	}
 
-	synchronized void suspenderhilo(){
+	/**
+	 * Método que suspende el hilo
+	 */
+	synchronized void suspenderHilo(){
 		suspender=true;
 	}
 
-	synchronized void renaudarhilo(){
+	/**
+	 * Método que reanuda el hilo
+	 */
+	synchronized void renaudarHilo(){
 		suspender=false;
 		notify();
 	}

@@ -157,6 +157,14 @@ public class Canodromo extends JFrame {
 	}
 	
 	public void winnerDialog(String winner,int total) {
-            JOptionPane.showMessageDialog(null, "El ganador fue:" + winner + " de un total de " + total);
-        }	
+		JOptionPane.showMessageDialog(null, "El ganador fue:" + winner + " de un total de " + total);
+	}
+
+	public void pauseDialog() {
+		JOptionPane.showMessageDialog(null, "La carrera se ha pausado, presione Continue para reanudarla.");
+	}
+
+	public void continueDialog() {
+		JOptionPane.showMessageDialog(null, "La carrera se ha reanudado.");
+	}
 }

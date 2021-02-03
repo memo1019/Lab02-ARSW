@@ -47,21 +47,19 @@ public class Galgo extends Thread {
 		}
 	}
 
-	public synchronized void setmovimiento(boolean movimiento){
+	public synchronized void setMovimiento(boolean movimiento){
 		this.movimiento=movimiento;
 		if (movimiento== true){
 			notifyAll();
 		}
 	}
+
 	@Override
 	public void run() {
-		
 		try {
 			corra();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }
