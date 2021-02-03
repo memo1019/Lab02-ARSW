@@ -179,6 +179,18 @@ Parte III
     a.  La acción de iniciar la carrera y mostrar los resultados se realiza a partir de la línea 38 de MainCanodromo.
 
     b.  Puede utilizarse el método join() de la clase Thread para sincronizar el hilo que inicia la carrera, con la finalización de los hilos de los galgos.
+    
+    Para solucionar este error se adicionó el siguiente fragmento de código a partir de la linea 38 en MainCanodromo:
+    ```java
+	for (int i = 0; i < can.getNumCarriles(); i++) {
+	    //sincroniza los hilos
+	    try {
+		galgos[i].join();
+	    } catch (InterruptedException interruptedException) {
+		interruptedException.printStackTrace();
+	    }
+	}
+    ```
 
 2.  Una vez corregido el problema inicial, corra la aplicación varias
     veces, e identifique las inconsistencias en los resultados de las
