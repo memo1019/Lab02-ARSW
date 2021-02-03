@@ -14,17 +14,50 @@ Creación, puesta en marcha y coordinación de hilos.
 
 1. Revise el programa “primos concurrentes” (en la carpeta parte1), dispuesto en el paquete edu.eci.arsw.primefinder. Este es un programa que calcula los números primos entre dos intervalos, distribuyendo la búsqueda de los mismos entre hilos independientes. Por ahora, tiene un único hilo de ejecución que busca los primos entre 0 y 30.000.000. Ejecútelo, abra el administrador de procesos del sistema operativo, y verifique cuantos núcleos son usados por el mismo.
 
-
-
 ![](./img/media/prueba1.png)
 
 2. Modifique el programa para que, en lugar de resolver el problema con un solo hilo, lo haga con tres, donde cada uno de éstos hará la tarcera parte del problema original. Verifique nuevamente el funcionamiento, y nuevamente revise el uso de los núcleos del equipo.
 ```java
-  
-  public static void main(String[] args) {
+public static void main(String[] args) {
+	int n=3;
+	int average = 30000000/n;
+	int cont = 0;
+	for (int i = 0; i < n; i++){
+		threads.add(new PrimeFinderThread(cont,cont+average, count));
+		cont = cont + average;
+	}
+	for (PrimeFinderThread hilo: threads){
+		hilo.start();
+	}
+}
+```
+
+![](./img/media/prueba2.png)
+
+3. Lo que se le ha pedido es: debe modificar la aplicación de manera que cuando hayan transcurrido 5 segundos desde que se inició la ejecución, se detengan todos los hilos y se muestre el número de primos encontrados hasta el momento. Luego, se debe esperar a que el usuario presione ENTER para reanudar la ejecución de los mismo.
+```java
+public class Main {
+	private static LinkedList<PrimeFinderThread> threads = new LinkedList<>();
+
+	public static void pararHilos(LinkedList<PrimeFinderThread> hilos){
+		for (PrimeFinderThread hilo: threads){
+			hilo.suspenderhilo();
+		}
+	}
+
+	public static void reanudarHilos(LinkedList<PrimeFinderThread> hilos){
+		for (PrimeFinderThread hilo: threads){
+			hilo.renaudarhilo();
+		}
+	}
+
+	public static void main(String[] args) {
+		Long inicio = System.currentTimeMillis();
 		int n=3;
 		int average = 30000000/n;
 		int cont = 0;
+		AtomicInteger count = new AtomicInteger();
+
 		for (int i = 0; i < n; i++){
 			threads.add(new PrimeFinderThread(cont,cont+average, count));
 			cont = cont + average;
@@ -33,125 +66,89 @@ Creación, puesta en marcha y coordinación de hilos.
 		for (PrimeFinderThread hilo: threads){
 			hilo.start();
 		}
+
+		while(true){
+			if(System.currentTimeMillis()-inicio==5000){
+				pararHilos(threads);
+				System.out.print("Primos encontrados después de 5 segundos: "+count);
+				break;
+			}
+		}
+
+		Scanner waitForKeypress = new Scanner(System.in);
+		waitForKeypress.nextLine();
+		reanudarHilos(threads);
+
+		for (PrimeFinderThread hilo: threads){
+			try {
+				hilo.join();
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
+			}
+		}
+		System.out.print("Primos encontrados en total: "+count);
 	}
-```
-![](./img/media/prueba2.png)
 
-3. Lo que se le ha pedido es: debe modificar la aplicación de manera que cuando hayan transcurrido 5 segundos desde que se inició la ejecución, se detengan todos los hilos y se muestre el número de primos encontrados hasta el momento. Luego, se debe esperar a que el usuario presione ENTER para reanudar la ejecución de los mismo.
-```java
-    public class Main {
-        private static LinkedList<PrimeFinderThread> threads = new LinkedList<>();
-
-        public static void pararHilos(LinkedList<PrimeFinderThread> hilos){
-            for (PrimeFinderThread hilo: threads){
-                hilo.suspenderhilo();
-            }
-        }
-
-        public static void reanudarHilos(LinkedList<PrimeFinderThread> hilos){
-            for (PrimeFinderThread hilo: threads){
-                hilo.renaudarhilo();
-            }
-        }
-        public static void main(String[] args) {
-            Long inicio = System.currentTimeMillis();
-            int n=3;
-            int average = 30000000/n;
-            int cont = 0;
-            AtomicInteger count = new AtomicInteger();
-
-            for (int i = 0; i < n; i++){
-                threads.add(new PrimeFinderThread(cont,cont+average, count));
-                cont = cont + average;
-            }
-
-            for (PrimeFinderThread hilo: threads){
-                hilo.start();
-            }
-
-            while(true){
-                if(System.currentTimeMillis()-inicio==5000){
-                    pararHilos(threads);
-                    System.out.print("Primos encontrados después de 5 segundos: "+count);
-                    break;
-                }
-            }
-
-            Scanner waitForKeypress = new Scanner(System.in);
-            waitForKeypress.nextLine();
-            reanudarHilos(threads);
-
-            for (PrimeFinderThread hilo: threads){
-                try {
-                    hilo.join();
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
-                }
-            }
-            System.out.print("Primos encontrados en total: "+count);
-        }
-    }
+}
  ```
 ![](./img/media/prueba3A.png)
  ```java
-    public class PrimeFinderThread extends Thread {
+public class PrimeFinderThread extends Thread {
+	private int a,b;
+	private List<Integer> primes=new LinkedList<Integer>();
+	private boolean suspender;
+	private AtomicInteger count;
 
-        private int a,b;
-        private List<Integer> primes=new LinkedList<Integer>();
-        private boolean suspender;
-        private AtomicInteger count;
+	public PrimeFinderThread(int a, int b, AtomicInteger count) {
+		super();
+		this.a = a;
+		this.b = b;
+		this.suspender = false;
+		this.count = count;
+	}
 
-        public PrimeFinderThread(int a, int b, AtomicInteger count) {
-            super();
-            this.a = a;
-            this.b = b;
-            this.suspender = false;
-            this.count = count;
-        }
-
-        public void run() {
-
-            for (int i = a; i <= b; i++) {
-                if (isPrime(i)) {
-                    primes.add(i);
-                    System.out.println(i);
-                    count.incrementAndGet();
-                }
-                synchronized (this) {
-                    while (suspender) {
-                        try {
-                            wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
+	public void run() {
+		for (int i = a; i <= b; i++) {
+			if (isPrime(i)) {
+				primes.add(i);
+				System.out.println(i);
+				count.incrementAndGet();
+			}
+			synchronized (this) {
+				while (suspender) {
+					try {
+						wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 
 
-        boolean isPrime(int n) {
-            if (n%2==0) return false;
-            for(int i=3;i*i<=n;i+=2) {
-                if(n%i==0)
-                    return false;
-            }
-            return true;
-        }
+	boolean isPrime(int n) {
+		if (n%2==0) return false;
+		for(int i=3;i*i<=n;i+=2) {
+			if(n%i==0)
+				return false;
+		}
+		return true;
+	}
 
-        public List<Integer> getPrimes() {
-            return primes;
-        }
+	public List<Integer> getPrimes() {
+		return primes;
+	}
 
-        synchronized void suspenderhilo(){
-            suspender=true;
-        }
+	synchronized void suspenderhilo(){
+		suspender=true;
+	}
 
-        synchronized void renaudarhilo(){
-            suspender=false;
-            notify();
-        }
-    }
+	synchronized void renaudarhilo(){
+		suspender=false;
+		notify();
+	}
+}
  ```
 ![](./img/media/prueba3B.png)
 
@@ -182,6 +179,18 @@ Parte III
     a.  La acción de iniciar la carrera y mostrar los resultados se realiza a partir de la línea 38 de MainCanodromo.
 
     b.  Puede utilizarse el método join() de la clase Thread para sincronizar el hilo que inicia la carrera, con la finalización de los hilos de los galgos.
+    
+    Para solucionar este error se adicionó el siguiente fragmento de código a partir de la linea 38 en MainCanodromo:
+    ```java
+	for (int i = 0; i < can.getNumCarriles(); i++) {
+	    //sincroniza los hilos
+	    try {
+		galgos[i].join();
+	    } catch (InterruptedException interruptedException) {
+		interruptedException.printStackTrace();
+	    }
+	}
+    ```
 
 2.  Una vez corregido el problema inicial, corra la aplicación varias
     veces, e identifique las inconsistencias en los resultados de las
